@@ -8,7 +8,13 @@
 import {handleRequest} from '../src/core.js';
 
 export default async function handler(req, res) {
-    const request = new Request(`${req.headers['x-forwarded-proto']}://${req.headers.host}${req.url}`, {
+    const forwardedProto = req.headers['x-forwarded-proto'] || 'https';
+    const incomingUrl = new URL(`${forwardedProto}://${req.headers.host}${req.url}`);
+    const rewrittenPath = incomingUrl.searchParams.get('path');
+    const path = rewrittenPath ? `/${rewrittenPath}` : incomingUrl.pathname;
+    const requestUrl = `${incomingUrl.protocol}//${incomingUrl.host}${path}`;
+
+    const request = new Request(requestUrl, {
         method: req.method,
         headers: new Headers(req.headers),
         body: req.method !== 'GET' && req.method !== 'HEAD' ? JSON.stringify(req.body) : null
