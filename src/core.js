@@ -150,6 +150,14 @@ export async function handleRequest(request, config) {
     const url = new URL(request.url);
     const path = url.pathname;
 
+    if (path === '/') {
+        return jsonResponse({
+            success: true,
+            message: 'Open Wegram Bot is running.',
+            install_url_format: `/${prefix}/install/YOUR_TELEGRAM_UID/BOT_API_TOKEN`
+        });
+    }
+
     const INSTALL_PATTERN = new RegExp(`^/${prefix}/install/([^/]+)/([^/]+)$`);
     const UNINSTALL_PATTERN = new RegExp(`^/${prefix}/uninstall/([^/]+)$`);
     const WEBHOOK_PATTERN = new RegExp(`^/${prefix}/webhook/([^/]+)/([^/]+)$`);
